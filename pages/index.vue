@@ -2,7 +2,7 @@
   <div v-if="user">
     <p>名前：{{user.name}}</p>
     <AddTodo @submit="addTodo"/>
-    <TodoList :todos="todos"/> 
+    <TodoList :todos="user.todos"/> 
   </div>
 </template>
 
@@ -28,16 +28,27 @@
         return this.$store.state.auth.currentUser;
       }
     },
-    created() {
-      console.log("API_KEY:", process.env.API_KEY);
-    },
     methods: {
-      async addTodo(title){
-        await axios.post("/v1/todos", { title });
-        this.todos.push({
-          title
+      async addTodo(todo){
+        const { data } = await axios.post("/v1/todos", { todo });
+        this.$store.dispatch("auth/setUser", {
+        ...this.user,
+        todos: [...this.user.todos, data]
         });
       },
+    },
+    fetch({
+      store,
+      redirect
+    }) {
+      store.watch(
+        state => state.auth.currentUser,
+        (newUser, oldUser) => {
+          if (!newUser) {
+            return redirect("/login")
+          }
+        }
+      );
     },
   }
 </script>

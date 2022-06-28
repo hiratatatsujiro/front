@@ -1,5 +1,11 @@
 <template>
   <v-app dark>
+
+    <div>
+      <Success />
+      <Loading />
+    </div>
+
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
@@ -89,6 +95,8 @@
 </template>
 
 <script>
+import Loading from "@/components/Loading"
+import Success from "../components/Success.vue";
 export default {
   name: 'DefaultLayout',
   data () {
@@ -96,23 +104,47 @@ export default {
       clipped: false,
       drawer: false,
       fixed: false,
-      items: [
-        {
+      miniVariant: false,
+      right: true,
+      rightDrawer: false,
+      title: 'TODO App'
+    }
+  },
+  components: {
+    Loading,
+    Success
+},
+  computed: {
+    user() {
+      return this.$store.state.auth.currentUser
+    },
+    items() {
+      if (this.user) {
+        return [{
           icon: 'mdi-apps',
-          title: 'Welcome',
+          title: 'TODOS',
           to: '/'
         },
         {
           icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
+          title: 'MYPAGE',
+          to: '/mypage'
         }
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js'
+        ];
+      } else {
+        return  [{
+          icon: 'mdi-apps',
+          title: 'LOGIN',
+          to: '/login'
+        },
+        {
+          icon: 'mdi-chart-bubble',
+          title: 'SIGNUP',
+          to: '/signup'
+        }
+        ];
+      }
     }
-  }
+  }   
 }
 </script>
